@@ -145,16 +145,16 @@ Deploy to Firebase Hosting:
    bash
    firebase deploy
 
-link-library/
-├── src/
-│ ├── components/ # React components
-│ ├── contexts/ # Context providers
-│ ├── pages/ # Page components
-│ ├── utils/ # Utility functions
-│ ├── App.js # Main App component
-│ └── index.js # Entry point
-├── public/ # Static files
-└── package.json # Project dependencies
+## Project Structure
+
+- src/components/: React components
+- src/contexts/: Context providers
+- src/pages/: Page components
+- src/utils/: Utility functions
+- src/App.js: Main App component
+- src/index.js: Entry point
+- public/: Static files
+- package.json: Project dependencies
 
 ## Contributing
 

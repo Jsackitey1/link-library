@@ -74,11 +74,14 @@ src/utils/firebaseConfig.js
 src/config/firebase.js
 src/firebase.js
 src/utils/firebase.js
-src/contexts/AuthContext.js
-src/config/*
 src/utils/config.js
+src/config/*
 src/utils/keys.js
 src/utils/auth.js
+src/contexts/AuthContext.js
+src/services/firebase.js
+src/firebase/config.js
+src/firebase/init.js
 
 # API Keys and Secrets
 .env*
@@ -112,6 +115,7 @@ firebase.settings.js
 .firebase/*
 firebase-admin.json
 firebase-service-account.json
+firebase.json
 
 # Environment and Configuration Files
 config/

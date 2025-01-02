@@ -74,6 +74,11 @@ src/utils/firebaseConfig.js
 src/config/firebase.js
 src/firebase.js
 src/utils/firebase.js
+src/contexts/AuthContext.js
+src/config/*
+src/utils/config.js
+src/utils/keys.js
+src/utils/auth.js
 
 # API Keys and Secrets
 .env*
@@ -83,6 +88,15 @@ api-keys.json
 secrets.json
 credentials.json
 config.json
+**/config/*.json
+**/config/*.js
+**/*config*.js
+**/*secret*.js
+**/*key*.js
+**/*auth*.js
+**/*.config.js
+**/*.secret.js
+**/*.keys.js
 
 # Firebase Configuration
 firebase-config.js
@@ -91,11 +105,34 @@ firebase.config.js
 .firebaserc
 firebase-credentials.json
 serviceAccountKey.json
+firebase.init.js
+firebase-init.js
+firebase-settings.js
+firebase.settings.js
+.firebase/*
+firebase-admin.json
+firebase-service-account.json
+
+# Environment and Configuration Files
+config/
+.config/
+settings/
+.settings/
+credentials/
+.credentials/
+secrets/
+.secrets/
+keys/
+.keys/
 
 # Local development SSL certificates
 *.pem
 *.key
 *.crt
+*.cert
+*.ca
+*.pfx
+*.p12
 
 # Backup files
 *.bak

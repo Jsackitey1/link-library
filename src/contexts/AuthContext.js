@@ -1,8 +1,8 @@
-import React, { createContext, useState, useEffect, useContext } from 'react';
+import React, { createContext, useState, useContext, useEffect } from 'react';
 import { auth } from '../utils/firebase';
 import { onAuthStateChanged } from 'firebase/auth';
 
-export const AuthContext = createContext();
+const AuthContext = createContext();
 
 export const useAuth = () => {
   return useContext(AuthContext);
@@ -11,29 +11,19 @@ export const useAuth = () => {
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, 
-      (user) => {
-        setUser(user);
-        setLoading(false);
-        setError(null);
-      },
-      (error) => {
-        console.error('Auth state change error:', error);
-        setError(error.message);
-        setLoading(false);
-      }
-    );
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      setUser(user);
+      setLoading(false);
+    });
 
-    return () => unsubscribe();
+    return unsubscribe;
   }, []);
 
   const value = {
     user,
-    loading,
-    error
+    loading
   };
 
   return (

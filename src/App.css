@@ -282,20 +282,36 @@ body {
 }
 
 .landing-content {
-  max-width: 500px;
-  width: 100%;
   text-align: center;
+  color: white;
+  max-width: 600px;
 }
 
 .landing-content h1 {
-  font-size: 2.5em;
-  color: #ffffff;
-  margin-bottom: 10px;
+  font-size: 2.5rem;
+  margin-bottom: 1rem;
 }
 
-.landing-content > p {
-  color: #ffffff;
-  margin-bottom: 40px;
+.landing-content p {
+  font-size: 1.2rem;
+  margin-bottom: 2rem;
+  opacity: 0.9;
+}
+
+.google-sign-in {
+  background: white;
+  color: #333;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 8px;
+  font-size: 1.1rem;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.google-sign-in:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
 }
 
 .auth-container {

@@ -73,6 +73,24 @@ Thumbs.db
 src/utils/firebaseConfig.js
 src/config/firebase.js
 src/firebase.js
+src/utils/firebase.js
+
+# API Keys and Secrets
+.env*
+.env.*
+*.env
+api-keys.json
+secrets.json
+credentials.json
+config.json
+
+# Firebase Configuration
+firebase-config.js
+firebaseConfig.js
+firebase.config.js
+.firebaserc
+firebase-credentials.json
+serviceAccountKey.json
 
 # Local development SSL certificates
 *.pem

@@ -2,6 +2,14 @@
 
 Link Library is a modern web application that helps users organize and manage their web resources efficiently. Built with React and Firebase, it provides a secure and user-friendly platform for saving, categorizing, and accessing web resources like articles, tutorials, documentation, and other valuable links.
 
+---
+
+## Video Walkthrough
+
+Here's a walkthrough of implemented features:
+
+<img src='VideoUpload.gif' title='Video Walkthrough' width='' alt='Video Walkthrough' />
+
 ## Features
 
 ### User Authentication

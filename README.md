@@ -1,6 +1,6 @@
 # Link Library
 
-Link Library is a modern web application that helps users organize and manage their web resources efficiently. Built with React and Firebase, it provides a secure and user-friendly platform for saving, categorizing, and accessing web resources like articles, tutorials, documentation, and other valuable links.
+Link Library is a modern web application that helps users organize and manage their web resources efficiently. Built with React and Firebase, it provides a secure and user-friendly platform for saving, categorizing, and accessing web resources like articles, tutorials, documentation, and other valuable links. [https://link-library-b61e8.web.app/resources]
 
 ---
 

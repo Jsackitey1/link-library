@@ -7,6 +7,7 @@ import Landing from './pages/Landing';
 import Home from './pages/Home';
 import AddResourceForm from './components/AddResourceForm';
 import EditResourceForm from './components/EditResourceForm';
+import Profile from './components/Profile';
 import { signOutUser } from './utils/firebase';
 import './App.css';
 
@@ -17,14 +18,18 @@ function AppContent() {
     <div className="App">
       {user && (
         <header className="app-header">
-          <h1 className="logo">Link Library</h1>
-          <nav className="main-nav">
-            <Link to="/resources">Browse Resources</Link>
-            <Link to="/add-resource">Add New</Link>
-            <button onClick={() => signOutUser()} className="logout-btn">
-              Logout
-            </button>
-          </nav>
+          <div className="header-content">
+            <div className="header-left">
+              <h1 className="logo">Your Web Resource Library📚</h1>
+              <nav className="main-nav">
+                <Link to="/resources">Browse Resources</Link>
+                <Link to="/add-resource">Add New</Link>
+              </nav>
+            </div>
+            <div className="header-right">
+              <Profile />
+            </div>
+          </div>
         </header>
       )}
 

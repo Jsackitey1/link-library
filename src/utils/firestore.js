@@ -7,7 +7,8 @@ import {
   orderBy,
   doc,
   updateDoc,
-  deleteDoc 
+  deleteDoc,
+  getDoc
 } from 'firebase/firestore';
 import { db } from './firebase';
 
@@ -68,6 +69,48 @@ export const getUserResources = async (userId) => {
     }));
   } catch (error) {
     console.error('Error getting resources:', error);
+    throw error;
+  }
+};
+
+export const getResourceById = async (resourceId) => {
+  try {
+    if (!resourceId) {
+      throw new Error('Resource ID is required');
+    }
+
+    const docRef = doc(db, 'resources', resourceId);
+    const docSnap = await getDoc(docRef);
+
+    if (!docSnap.exists()) {
+      throw new Error('Resource not found');
+    }
+
+    return {
+      id: docSnap.id,
+      ...docSnap.data()
+    };
+  } catch (error) {
+    console.error('Error getting resource:', error);
+    throw error;
+  }
+};
+
+export const updateResource = async (resourceId, updatedData) => {
+  try {
+    if (!resourceId) {
+      throw new Error('Resource ID is required');
+    }
+
+    const resourceRef = doc(db, 'resources', resourceId);
+    await updateDoc(resourceRef, updatedData);
+    
+    return {
+      id: resourceId,
+      ...updatedData
+    };
+  } catch (error) {
+    console.error('Error updating resource:', error);
     throw error;
   }
 }; 

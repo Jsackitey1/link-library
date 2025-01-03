@@ -3,12 +3,11 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { useResources } from '../contexts/ResourceContext';
 
 const EditResourceForm = () => {
-  const navigate = useNavigate();
   const { resourceId } = useParams();
-  const { resources, updateResource } = useResources();
+  const navigate = useNavigate();
+  const { getResource, updateResource, categories } = useResources();
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
-  const [loading, setLoading] = useState(false);
-
   const [formData, setFormData] = useState({
     title: '',
     url: '',
@@ -18,16 +17,23 @@ const EditResourceForm = () => {
   });
 
   useEffect(() => {
-    const resource = resources.find(r => r.id === parseInt(resourceId));
-    if (resource) {
-      setFormData({
-        ...resource,
-        tags: resource.tags.join(', ') // Convert tags array to comma-separated string
-      });
-    } else {
-      setError('Resource not found');
-    }
-  }, [resourceId, resources]);
+    const loadResource = async () => {
+      try {
+        const resource = await getResource(resourceId);
+        setFormData({
+          ...resource,
+          tags: Array.isArray(resource.tags) ? resource.tags.join(', ') : ''
+        });
+      } catch (error) {
+        setError('Resource not found');
+        console.error('Error loading resource:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadResource();
+  }, [resourceId, getResource]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -43,7 +49,6 @@ const EditResourceForm = () => {
     setLoading(true);
 
     try {
-      // Convert tags string to array
       const tagsArray = formData.tags
         .split(',')
         .map(tag => tag.trim())
@@ -51,37 +56,25 @@ const EditResourceForm = () => {
 
       const updatedResource = {
         ...formData,
-        tags: tagsArray,
-        id: parseInt(resourceId)
+        tags: tagsArray
       };
 
-      updateResource(updatedResource);
+      await updateResource(resourceId, updatedResource);
       navigate('/resources');
     } catch (error) {
-      setError('Failed to update resource. Please try again.');
+      setError('Failed to update resource');
       console.error('Error updating resource:', error);
     } finally {
       setLoading(false);
     }
   };
 
-  if (error === 'Resource not found') {
-    return (
-      <div className="resource-form">
-        <h2>Edit Resource</h2>
-        <p className="error">Resource not found</p>
-        <button onClick={() => navigate('/resources')} className="back-button">
-          Back to Resources
-        </button>
-      </div>
-    );
-  }
+  if (loading) return <div>Loading...</div>;
+  if (error) return <div className="error">{error}</div>;
 
   return (
     <div className="resource-form">
       <h2>Edit Resource</h2>
-      {error && <p className="error">{error}</p>}
-      
       <form onSubmit={handleSubmit}>
         <div className="form-group">
           <label htmlFor="title">Title</label>
@@ -149,7 +142,7 @@ const EditResourceForm = () => {
 
         <div className="form-actions">
           <button type="submit" disabled={loading} className="save-button">
-            {loading ? 'Saving...' : 'Save Changes'}
+            {loading ? 'Updating...' : 'Update Resource'}
           </button>
           <button 
             type="button" 

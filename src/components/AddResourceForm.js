@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useResources } from '../contexts/ResourceContext';
-import { useAuth } from '../contexts/AuthContext';
+import { FiPlus } from 'react-icons/fi';
+import './AddResourceForm.css';
 
 const AddResourceForm = () => {
   const navigate = useNavigate();
-  const { addResource, categories } = useResources();
-  const { user } = useAuth();
+  const { addResource, categories, addCategory } = useResources();
   const [formData, setFormData] = useState({
     title: '',
     url: '',
@@ -14,6 +14,8 @@ const AddResourceForm = () => {
     category: '',
     tags: ''
   });
+  const [newCategory, setNewCategory] = useState('');
+  const [isAddingCategory, setIsAddingCategory] = useState(false);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
@@ -30,43 +32,46 @@ const AddResourceForm = () => {
     setError('');
     setLoading(true);
 
-    // Debug log
-    console.log('Current user:', user);
-
     try {
-      if (!user) {
-        throw new Error('You must be logged in to add resources');
-      }
-
       const tagsArray = formData.tags
         .split(',')
         .map(tag => tag.trim())
         .filter(tag => tag !== '');
 
-      const newResource = {
+      await addResource({
         ...formData,
         tags: tagsArray,
         category: formData.category || 'Other'
-      };
-
-      await addResource(newResource);
-      navigate('/resources');
+      });
+      navigate('/');
     } catch (error) {
-      setError(error.message || 'Failed to add resource. Please try again.');
+      setError('Failed to add resource');
       console.error('Error adding resource:', error);
     } finally {
       setLoading(false);
     }
   };
 
+  const handleAddCategory = () => {
+    if (newCategory.trim()) {
+      addCategory(newCategory.trim());
+      setFormData(prev => ({
+        ...prev,
+        category: newCategory.trim()
+      }));
+      setNewCategory('');
+      setIsAddingCategory(false);
+    }
+  };
+
   return (
-    <div className="resource-form">
-      <h2>Add New Resource</h2>
-      {error && <p className="error">{error}</p>}
-      
-      <form onSubmit={handleSubmit}>
+    <div className="add-resource-container">
+      <form onSubmit={handleSubmit} className="add-resource-form">
+        <h2>Add New Resource</h2>
+        {error && <div className="error-message">{error}</div>}
+
         <div className="form-group">
-          <label htmlFor="title">Title</label>
+          <label htmlFor="title">Title *</label>
           <input
             type="text"
             id="title"
@@ -79,7 +84,7 @@ const AddResourceForm = () => {
         </div>
 
         <div className="form-group">
-          <label htmlFor="url">URL</label>
+          <label htmlFor="url">URL *</label>
           <input
             type="url"
             id="url"
@@ -98,30 +103,66 @@ const AddResourceForm = () => {
             name="description"
             value={formData.description}
             onChange={handleChange}
-            required
             disabled={loading}
           />
         </div>
 
         <div className="form-group">
           <label htmlFor="category">Category</label>
-          <select
-            id="category"
-            name="category"
-            value={formData.category}
-            onChange={handleChange}
-            required
-            disabled={loading}
-            className="category-select"
-          >
-            <option value="">Select a category</option>
-            {(categories || ['Development', 'Design', 'Marketing', 'Other']).map(category => (
-              <option key={category} value={category}>
-                {category}
-              </option>
-            ))}
-            <option value="add_new">+ Add new category</option>
-          </select>
+          <div className="category-input-group">
+            {isAddingCategory ? (
+              <div className="new-category-input">
+                <input
+                  type="text"
+                  value={newCategory}
+                  onChange={(e) => setNewCategory(e.target.value)}
+                  placeholder="Enter new category"
+                  disabled={loading}
+                />
+                <button
+                  type="button"
+                  onClick={handleAddCategory}
+                  className="add-category-btn"
+                  disabled={loading || !newCategory.trim()}
+                >
+                  Add
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setIsAddingCategory(false)}
+                  className="cancel-category-btn"
+                  disabled={loading}
+                >
+                  Cancel
+                </button>
+              </div>
+            ) : (
+              <div className="category-select-group">
+                <select
+                  id="category"
+                  name="category"
+                  value={formData.category}
+                  onChange={handleChange}
+                  disabled={loading}
+                >
+                  <option value="">Select a category</option>
+                  {categories.map(category => (
+                    <option key={category} value={category}>
+                      {category}
+                    </option>
+                  ))}
+                </select>
+                <button
+                  type="button"
+                  onClick={() => setIsAddingCategory(true)}
+                  className="new-category-btn"
+                  disabled={loading}
+                >
+                  <FiPlus /> New
+                </button>
+              </div>
+            )}
+          </div>
         </div>
 
         <div className="form-group">
@@ -132,14 +173,24 @@ const AddResourceForm = () => {
             name="tags"
             value={formData.tags}
             onChange={handleChange}
-            placeholder="e.g., javascript, react, tutorial"
+            placeholder="e.g., javascript, tutorial, react"
             disabled={loading}
           />
         </div>
 
-        <button type="submit" disabled={loading}>
-          {loading ? 'Adding...' : 'Add Resource'}
-        </button>
+        <div className="form-actions">
+          <button type="submit" disabled={loading} className="submit-button">
+            {loading ? 'Adding...' : 'Add Resource'}
+          </button>
+          <button
+            type="button"
+            onClick={() => navigate('/')}
+            disabled={loading}
+            className="cancel-button"
+          >
+            Cancel
+          </button>
+        </div>
       </form>
     </div>
   );

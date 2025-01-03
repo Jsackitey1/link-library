@@ -1,6 +1,8 @@
 import React, { createContext, useState, useContext, useEffect } from 'react';
 import { useAuth } from './AuthContext';
-import { addResource as addResourceToDb, getUserResources } from '../utils/firestore';
+import { addResource as addResourceToDb, getUserResources, getResourceById, updateResource as updateResourceInDb } from '../utils/firestore';
+import { addDoc, collection, deleteDoc, doc } from 'firebase/firestore';
+import { db } from '../utils/firebase';
 
 export const ResourceContext = createContext();
 
@@ -10,7 +12,7 @@ export const useResources = () => {
 
 export const ResourceProvider = ({ children }) => {
   const [resources, setResources] = useState([]);
-  const [categories] = useState(['Development', 'Design', 'Marketing', 'Other']);
+  const [categories, setCategories] = useState(['Development', 'Design', 'Marketing', 'Other']);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const { user } = useAuth();
@@ -34,18 +36,65 @@ export const ResourceProvider = ({ children }) => {
     loadResources();
   }, [user]);
 
-  const addResource = async (newResource) => {
+  const addResource = async (resource) => {
     try {
-      if (!user?.uid) {
-        throw new Error('User must be authenticated');
+      const newResource = {
+        ...resource,
+        createdAt: new Date().toISOString(),
+        userId: user.uid
+      };
+      
+      if (resource.category && !categories.includes(resource.category)) {
+        setCategories(prev => [...prev, resource.category]);
       }
 
-      const addedResource = await addResourceToDb(newResource, user.uid);
-      setResources(prev => [addedResource, ...prev]);
-      return addedResource;
+      const docRef = await addDoc(collection(db, 'resources'), newResource);
+      setResources(prev => [...prev, { ...newResource, id: docRef.id }]);
+      return docRef;
     } catch (error) {
-      console.error('Error in ResourceContext:', error);
+      console.error('Error adding resource:', error);
       throw error;
+    }
+  };
+
+  const getResource = async (resourceId) => {
+    try {
+      return await getResourceById(resourceId);
+    } catch (error) {
+      console.error('Error getting resource:', error);
+      throw error;
+    }
+  };
+
+  const updateResource = async (resourceId, updatedData) => {
+    try {
+      const updated = await updateResourceInDb(resourceId, updatedData);
+      setResources(prev =>
+        prev.map(resource =>
+          resource.id === resourceId ? { ...resource, ...updated } : resource
+        )
+      );
+      return updated;
+    } catch (error) {
+      console.error('Error updating resource:', error);
+      throw error;
+    }
+  };
+
+  const deleteResource = async (resourceId) => {
+    try {
+      await deleteDoc(doc(db, 'resources', resourceId));
+      
+      setResources(prev => prev.filter(resource => resource.id !== resourceId));
+    } catch (error) {
+      console.error('Error deleting resource:', error);
+      throw error;
+    }
+  };
+
+  const addCategory = (newCategory) => {
+    if (!categories.includes(newCategory)) {
+      setCategories(prev => [...prev, newCategory]);
     }
   };
 
@@ -54,7 +103,11 @@ export const ResourceProvider = ({ children }) => {
     categories,
     loading,
     error,
-    addResource
+    addResource,
+    getResource,
+    updateResource,
+    deleteResource,
+    addCategory
   };
 
   return (

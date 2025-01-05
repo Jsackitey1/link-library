@@ -181,3 +181,10 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 - Firebase for authentication and database services
 - React.js community
 - All contributors to this project
+
+## Setup
+
+1. Copy `src/firebase/config.example.js` to `src/firebase/config.js`
+2. Update `config.js` with your Firebase credentials
+3. Copy `.env.example` to `.env`
+4. Update `.env` with your environment variables

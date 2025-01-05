@@ -45,20 +45,38 @@ const SignIn = () => {
     setError(null);
     
     try {
+      if (!email || !password) {
+        throw new Error('Please fill in all fields');
+      }
+
       let userCredential;
       
       if (isSignUp) {
+        // Create new user
         userCredential = await createUserWithEmailAndPassword(auth, email, password);
-        await createUserProfile(userCredential.user);
       } else {
+        // Sign in existing user
         userCredential = await signInWithEmailAndPassword(auth, email, password);
-        await createUserProfile(userCredential.user);
       }
       
+      // Only create/update profile after successful authentication
+      await createUserProfile(userCredential.user);
       console.log('User authenticated successfully');
+      
     } catch (error) {
       console.error('Authentication error:', error);
-      setError(error.message);
+      // Provide more user-friendly error messages
+      if (error.code === 'auth/email-already-in-use') {
+        setError('An account with this email already exists');
+      } else if (error.code === 'auth/weak-password') {
+        setError('Password should be at least 6 characters');
+      } else if (error.code === 'auth/user-not-found') {
+        setError('No account found with this email');
+      } else if (error.code === 'auth/wrong-password') {
+        setError('Incorrect password');
+      } else {
+        setError(error.message);
+      }
     } finally {
       setLoading(false);
     }

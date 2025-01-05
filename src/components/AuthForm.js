@@ -39,18 +39,19 @@ const AuthForm = () => {
 
   return (
     <div className="auth-form-container">
-      <h2>{isSignUp ? 'Create Account' : 'Sign In'}</h2>
+      <h2>{isSignUp ? 'Create Account' : 'Welcome Back'}</h2>
       {error && <p className="error-message">{error}</p>}
       
       <form onSubmit={handleSubmit} className="auth-form">
         <div className="form-group">
-          <label htmlFor="email">Email</label>
+          <label htmlFor="email">Email Address</label>
           <input
             type="email"
             id="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             required
+            placeholder="Enter your email"
           />
         </div>
         
@@ -63,20 +64,21 @@ const AuthForm = () => {
             onChange={(e) => setPassword(e.target.value)}
             required
             minLength="6"
+            placeholder={isSignUp ? "Choose a password (min. 6 characters)" : "Enter your password"}
           />
         </div>
 
         <button type="submit" className="submit-button">
-          {isSignUp ? 'Sign Up' : 'Sign In'}
+          {isSignUp ? 'Create Account' : 'Sign In'}
         </button>
       </form>
 
       <button onClick={handleGoogleSignIn} className="google-button">
-        Sign in with Google
+        Continue with Google
       </button>
 
       <p className="toggle-form">
-        {isSignUp ? 'Already have an account?' : "Don't have an account?"}{' '}
+        {isSignUp ? 'Already have an account?' : "Don't have an account yet?"}{' '}
         <button 
           onClick={() => setIsSignUp(!isSignUp)}
           className="toggle-button"

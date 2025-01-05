@@ -1,31 +1,29 @@
 import React, { useState } from 'react';
 import { auth } from '../utils/firebase';
-import { FcGoogle } from 'react-icons/fc';
-import { HiMail } from 'react-icons/hi';
+import { createUserWithEmailAndPassword, signInWithEmailAndPassword, GoogleAuthProvider, signInWithPopup } from 'firebase/auth';
 import './AuthForm.css';
-import { 
-  createUserWithEmailAndPassword,
-  signInWithEmailAndPassword,
-  GoogleAuthProvider,
-  signInWithPopup
-} from 'firebase/auth';
 
-const AuthForm = ({ mode }) => {
+const AuthForm = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [error, setError] = useState(null);
-  const [isRegistering, setIsRegistering] = useState(false);
+  const [isSignUp, setIsSignUp] = useState(false);
+  const [error, setError] = useState('');
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setError('');
+    
     try {
-      if (mode === 'signup') {
+      if (isSignUp) {
+        // Create new account
         await createUserWithEmailAndPassword(auth, email, password);
       } else {
+        // Sign in existing user
         await signInWithEmailAndPassword(auth, email, password);
       }
     } catch (error) {
-      setError(error.message);
+      console.error('Auth error:', error);
+      setError(error.message.replace('Firebase: ', ''));
     }
   };
 
@@ -34,102 +32,58 @@ const AuthForm = ({ mode }) => {
       const provider = new GoogleAuthProvider();
       await signInWithPopup(auth, provider);
     } catch (error) {
-      setError(error.message);
+      console.error('Google sign-in error:', error);
+      setError(error.message.replace('Firebase: ', ''));
     }
   };
 
   return (
-    <div className="auth-container">
-      <div className="auth-content">
-        <div className="auth-header">
-          <h1>Link Library</h1>
-          <p>Your personal resource manager</p>
+    <div className="auth-form-container">
+      <h2>{isSignUp ? 'Create Account' : 'Sign In'}</h2>
+      {error && <p className="error-message">{error}</p>}
+      
+      <form onSubmit={handleSubmit} className="auth-form">
+        <div className="form-group">
+          <label htmlFor="email">Email</label>
+          <input
+            type="email"
+            id="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            required
+          />
+        </div>
+        
+        <div className="form-group">
+          <label htmlFor="password">Password</label>
+          <input
+            type="password"
+            id="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            required
+            minLength="6"
+          />
         </div>
 
-        <div className="auth-card">
-          <h2>{mode === 'signup' ? 'Create your account' : 'Welcome back'}</h2>
-          <p className="auth-subtitle">
-            {mode === 'signup' 
-              ? 'Start organizing your resources today'
-              : 'Sign in to access your resources'
-            }
-          </p>
+        <button type="submit" className="submit-button">
+          {isSignUp ? 'Sign Up' : 'Sign In'}
+        </button>
+      </form>
 
-          <div className="social-auth">
-            <button 
-              onClick={handleGoogleSignIn} 
-              className="google-button"
-            >
-              <FcGoogle className="google-icon" />
-              <span>Continue with Google</span>
-            </button>
-          </div>
+      <button onClick={handleGoogleSignIn} className="google-button">
+        Sign in with Google
+      </button>
 
-          <div className="auth-divider">
-            <span>or continue with email</span>
-          </div>
-
-          {error && <div className="auth-error">{error}</div>}
-
-          <form onSubmit={handleSubmit} className="auth-form">
-            <div className="form-group">
-              <label htmlFor="email">Email address</label>
-              <div className="input-wrapper">
-                <HiMail className="input-icon" />
-                <input
-                  type="email"
-                  id="email"
-                  placeholder="you@example.com"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  required
-                />
-              </div>
-            </div>
-
-            <div className="form-group">
-              <div className="password-label">
-                <label htmlFor="password">Password</label>
-                {mode !== 'signup' && (
-                  <a href="#" className="forgot-password">
-                    Forgot password?
-                  </a>
-                )}
-              </div>
-              <div className="input-wrapper">
-                <input
-                  type="password"
-                  id="password"
-                  placeholder={mode === 'signup' ? 'Create a password' : 'Enter your password'}
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  required
-                />
-              </div>
-            </div>
-
-            <button 
-              type="submit" 
-              className="submit-button"
-            >
-              {mode === 'signup' ? 'Create account' : 'Sign in'}
-            </button>
-          </form>
-
-          <p className="auth-switch">
-            {mode === 'signup' 
-              ? 'Already have an account? ' 
-              : "Don't have an account? "
-            }
-            <button
-              onClick={() => setIsRegistering(!isRegistering)}
-              className="switch-button"
-            >
-              {mode === 'signup' ? 'Sign in' : 'Create one'}
-            </button>
-          </p>
-        </div>
-      </div>
+      <p className="toggle-form">
+        {isSignUp ? 'Already have an account?' : "Don't have an account?"}{' '}
+        <button 
+          onClick={() => setIsSignUp(!isSignUp)}
+          className="toggle-button"
+        >
+          {isSignUp ? 'Sign In' : 'Sign Up'}
+        </button>
+      </p>
     </div>
   );
 };

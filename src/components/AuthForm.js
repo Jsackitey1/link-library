@@ -1,31 +1,40 @@
 import React, { useState } from 'react';
-import { signInWithGoogle, signInWithEmail, createUserWithEmail } from '../utils/firebase';
+import { auth } from '../utils/firebase';
 import { FcGoogle } from 'react-icons/fc';
 import { HiMail } from 'react-icons/hi';
 import './AuthForm.css';
+import { 
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
+  GoogleAuthProvider,
+  signInWithPopup
+} from 'firebase/auth';
 
-const AuthForm = () => {
-  const [isRegistering, setIsRegistering] = useState(false);
+const AuthForm = ({ mode }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
-  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+  const [isRegistering, setIsRegistering] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError('');
-    setLoading(true);
-
     try {
-      if (isRegistering) {
-        await createUserWithEmail(email, password);
+      if (mode === 'signup') {
+        await createUserWithEmailAndPassword(auth, email, password);
       } else {
-        await signInWithEmail(email, password);
+        await signInWithEmailAndPassword(auth, email, password);
       }
     } catch (error) {
       setError(error.message);
-    } finally {
-      setLoading(false);
+    }
+  };
+
+  const handleGoogleSignIn = async () => {
+    try {
+      const provider = new GoogleAuthProvider();
+      await signInWithPopup(auth, provider);
+    } catch (error) {
+      setError(error.message);
     }
   };
 
@@ -38,9 +47,9 @@ const AuthForm = () => {
         </div>
 
         <div className="auth-card">
-          <h2>{isRegistering ? 'Create your account' : 'Welcome back'}</h2>
+          <h2>{mode === 'signup' ? 'Create your account' : 'Welcome back'}</h2>
           <p className="auth-subtitle">
-            {isRegistering 
+            {mode === 'signup' 
               ? 'Start organizing your resources today'
               : 'Sign in to access your resources'
             }
@@ -48,9 +57,8 @@ const AuthForm = () => {
 
           <div className="social-auth">
             <button 
-              onClick={() => signInWithGoogle()} 
+              onClick={handleGoogleSignIn} 
               className="google-button"
-              disabled={loading}
             >
               <FcGoogle className="google-icon" />
               <span>Continue with Google</span>
@@ -75,7 +83,6 @@ const AuthForm = () => {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   required
-                  disabled={loading}
                 />
               </div>
             </div>
@@ -83,7 +90,7 @@ const AuthForm = () => {
             <div className="form-group">
               <div className="password-label">
                 <label htmlFor="password">Password</label>
-                {!isRegistering && (
+                {mode !== 'signup' && (
                   <a href="#" className="forgot-password">
                     Forgot password?
                   </a>
@@ -93,11 +100,10 @@ const AuthForm = () => {
                 <input
                   type="password"
                   id="password"
-                  placeholder={isRegistering ? 'Create a password' : 'Enter your password'}
+                  placeholder={mode === 'signup' ? 'Create a password' : 'Enter your password'}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   required
-                  disabled={loading}
                 />
               </div>
             </div>
@@ -105,28 +111,21 @@ const AuthForm = () => {
             <button 
               type="submit" 
               className="submit-button"
-              disabled={loading}
             >
-              {loading 
-                ? 'Please wait...' 
-                : isRegistering 
-                  ? 'Create account' 
-                  : 'Sign in'
-              }
+              {mode === 'signup' ? 'Create account' : 'Sign in'}
             </button>
           </form>
 
           <p className="auth-switch">
-            {isRegistering 
+            {mode === 'signup' 
               ? 'Already have an account? ' 
               : "Don't have an account? "
             }
             <button
               onClick={() => setIsRegistering(!isRegistering)}
               className="switch-button"
-              disabled={loading}
             >
-              {isRegistering ? 'Sign in' : 'Create one'}
+              {mode === 'signup' ? 'Sign in' : 'Create one'}
             </button>
           </p>
         </div>

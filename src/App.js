@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate, Link } from 'react-router-dom';
 import { AuthProvider } from './contexts/AuthContext';
 import { ResourceProvider } from './contexts/ResourceContext';
@@ -8,8 +8,12 @@ import Home from './pages/Home';
 import AddResourceForm from './components/AddResourceForm';
 import EditResourceForm from './components/EditResourceForm';
 import Profile from './components/Profile';
-import { signOutUser } from './utils/firebase';
+import { auth } from './utils/firebase';
 import './App.css';
+import { onAuthStateChanged } from 'firebase/auth';
+import SignIn from './components/SignIn';
+import SignOut from './components/SignOut';
+import AddResource from './components/AddResource';
 
 function AppContent() {
   const { user } = useAuth();
@@ -76,8 +80,19 @@ function AppContent() {
 }
 
 function App() {
+  const [user, setUser] = useState(null);
+
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+      console.log('Auth state changed:', currentUser ? 'logged in' : 'logged out');
+      setUser(currentUser);
+    });
+
+    return () => unsubscribe();
+  }, []);
+
   return (
-    <Router>
+    <Router basename="/link-library">
       <AuthProvider>
         <AppContent />
       </AuthProvider>

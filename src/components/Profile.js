@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useAuth } from '../contexts/AuthContext';
-import { signOutUser } from '../utils/firebase';
+import { auth } from '../utils/firebase';
+import { signOut } from 'firebase/auth';
 import './Profile.css';
 
 const Profile = () => {
@@ -19,6 +20,15 @@ const Profile = () => {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
+  const handleSignOut = async () => {
+    try {
+      await signOut(auth);
+      // Handle successful sign out (e.g., redirect to home page)
+    } catch (error) {
+      console.error('Error signing out:', error);
+    }
+  };
+
   if (!user) return null;
 
   return (
@@ -33,7 +43,7 @@ const Profile = () => {
 
       {isOpen && (
         <div className="profile-dropdown">
-          <button onClick={signOutUser} className="dropdown-item">
+          <button onClick={handleSignOut} className="dropdown-item">
             Sign Out
           </button>
         </div>

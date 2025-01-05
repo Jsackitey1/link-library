@@ -8,43 +8,51 @@ import {
   doc,
   updateDoc,
   deleteDoc,
-  getDoc
+  getDoc,
+  serverTimestamp
 } from 'firebase/firestore';
 import { db } from './firebase';
 
 // Add a new resource
-export const addResource = async (resource, userId) => {
+export const addResource = async (resourceData, userId) => {
   try {
-    // Ensure we have a userId
+    // Debug logs
+    console.log('Starting addResource function');
+    console.log('User ID:', userId);
+    console.log('Resource Data:', resourceData);
+    console.log('Database instance:', db);
+
+    if (!db) {
+      throw new Error('Firestore database instance is not initialized');
+    }
+
     if (!userId) {
       throw new Error('User ID is required');
     }
 
-    // Create the resource object
-    const resourceToAdd = {
-      ...resource,
-      userId,
-      createdAt: new Date().toISOString(),
-      tags: Array.isArray(resource.tags) ? resource.tags : [],
-      category: resource.category || 'Other'
-    };
-
-    // Add to Firestore
     const resourcesRef = collection(db, 'resources');
-    const docRef = await addDoc(resourcesRef, resourceToAdd);
+    console.log('Collection reference created');
 
-    // Return the complete resource with its ID
-    return {
-      id: docRef.id,
-      ...resourceToAdd
+    const newResource = {
+      ...resourceData,
+      userId,
+      createdAt: serverTimestamp(),
+      updatedAt: serverTimestamp()
     };
+
+    console.log('Attempting to add document with data:', newResource);
+
+    const docRef = await addDoc(resourcesRef, newResource);
+    console.log('Document successfully added with ID:', docRef.id);
+    
+    return docRef.id;
   } catch (error) {
-    console.error('Error adding resource:', {
-      error,
-      resource,
-      userId
+    console.error('Detailed error in addResource:', {
+      errorMessage: error.message,
+      errorCode: error.code,
+      errorStack: error.stack
     });
-    throw new Error('Failed to add resource: ' + error.message);
+    throw new Error(`Failed to add resource: ${error.message}`);
   }
 };
 

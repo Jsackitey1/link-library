@@ -1,0 +1,159 @@
+.sign-in-container {
+  max-width: 480px;
+  margin: 2rem auto;
+  padding: 2rem;
+  background-color: white;
+  border-radius: 1rem;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+}
+
+.sign-in-container form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.form-group label {
+  color: #101419;
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.form-group input {
+  padding: 0.75rem 1rem;
+  border: 1px solid #d3dbe4;
+  border-radius: 0.5rem;
+  font-size: 1rem;
+  color: #101419;
+  transition: all 0.2s ease;
+}
+
+.form-group input:focus {
+  outline: none;
+  border-color: #d2e2f3;
+  box-shadow: 0 0 0 2px rgba(210, 226, 243, 0.2);
+}
+
+.form-group input::placeholder {
+  color: #a0aec0;
+}
+
+.error-message {
+  background-color: #fff5f5;
+  color: #e53e3e;
+  padding: 0.75rem 1rem;
+  border-radius: 0.5rem;
+  font-size: 0.875rem;
+  border: 1px solid #feb2b2;
+}
+
+button[type="submit"] {
+  background-color: #d2e2f3;
+  color: #101419;
+  font-weight: bold;
+  border: none;
+  border-radius: 0.75rem;
+  padding: 0.75rem 1.5rem;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+button[type="submit"]:hover {
+  background-color: #b8d1e8;
+}
+
+button[type="submit"]:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+button[type="button"] {
+  background-color: transparent;
+  color: #58728d;
+  border: none;
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  padding: 0.5rem;
+}
+
+button[type="button"]:hover {
+  color: #101419;
+}
+
+.divider {
+  position: relative;
+  text-align: center;
+  margin: 1.5rem 0;
+}
+
+.divider::before,
+.divider::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  width: calc(50% - 2rem);
+  height: 1px;
+  background-color: #e9edf1;
+}
+
+.divider::before {
+  left: 0;
+}
+
+.divider::after {
+  right: 0;
+}
+
+.divider span {
+  background-color: white;
+  padding: 0 1rem;
+  color: #58728d;
+  font-size: 0.875rem;
+}
+
+.google-sign-in {
+  width: 100%;
+  background-color: white;
+  color: #101419;
+  border: 1px solid #d3dbe4;
+  border-radius: 0.75rem;
+  padding: 0.75rem 1.5rem;
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+}
+
+.google-sign-in:hover {
+  background-color: #f9fafb;
+  border-color: #b8d1e8;
+}
+
+.google-sign-in:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.google-sign-in img {
+  width: 1.5rem;
+  height: 1.5rem;
+}
+
+@media (max-width: 480px) {
+  .sign-in-container {
+    margin: 1rem;
+    padding: 1.5rem;
+  }
+} 

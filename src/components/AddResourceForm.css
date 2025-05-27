@@ -1,20 +1,21 @@
 .add-resource-container {
   padding: 2rem;
-  max-width: 600px;
+  max-width: 640px;
   margin: 0 auto;
 }
 
 .add-resource-form {
   background: white;
   padding: 2rem;
-  border-radius: 12px;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  border-radius: 0.75rem;
+  box-shadow: var(--shadow-lg);
 }
 
 .add-resource-form h2 {
   margin: 0 0 1.5rem;
-  color: #2d3748;
-  font-size: 1.8rem;
+  color: var(--text-primary);
+  font-size: 1.5rem;
+  font-weight: 600;
 }
 
 .form-group {
@@ -24,18 +25,20 @@
 .form-group label {
   display: block;
   margin-bottom: 0.5rem;
-  color: #4a5568;
+  color: var(--text-primary);
   font-weight: 500;
+  font-size: 0.875rem;
 }
 
 .form-group input,
 .form-group textarea,
 .form-group select {
   width: 100%;
-  padding: 0.75rem;
-  border: 2px solid #e2e8f0;
-  border-radius: 8px;
-  font-size: 1rem;
+  padding: 0.75rem 1rem;
+  border: 1px solid var(--border-color);
+  border-radius: 0.5rem;
+  font-size: 0.875rem;
+  color: var(--text-primary);
   transition: all 0.2s;
 }
 
@@ -43,8 +46,8 @@
 .form-group textarea:focus,
 .form-group select:focus {
   outline: none;
-  border-color: #4299e1;
-  box-shadow: 0 0 0 3px rgba(66, 153, 225, 0.15);
+  border-color: var(--accent-color);
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.1);
 }
 
 .form-group textarea {
@@ -82,8 +85,9 @@
 .cancel-category-btn {
   padding: 0.75rem 1rem;
   border: none;
-  border-radius: 8px;
+  border-radius: 0.5rem;
   font-weight: 500;
+  font-size: 0.875rem;
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -92,30 +96,31 @@
 }
 
 .new-category-btn {
-  background: #e2e8f0;
-  color: #4a5568;
+  background: var(--accent-color);
+  color: white;
 }
 
 .new-category-btn:hover:not(:disabled) {
-  background: #cbd5e0;
+  background: var(--accent-hover);
 }
 
 .add-category-btn {
-  background: #38a169;
+  background: var(--accent-color);
   color: white;
+  font-weight: 600;
 }
 
 .add-category-btn:hover:not(:disabled) {
-  background: #2f855a;
+  background: var(--accent-hover);
 }
 
 .cancel-category-btn {
-  background: #e53e3e;
-  color: white;
+  background: var(--error-bg);
+  color: var(--error-text);
 }
 
 .cancel-category-btn:hover:not(:disabled) {
-  background: #c53030;
+  background: var(--error-border);
 }
 
 .form-actions {
@@ -129,28 +134,30 @@
   flex: 1;
   padding: 0.75rem;
   border: none;
-  border-radius: 8px;
+  border-radius: 0.5rem;
   font-weight: 500;
+  font-size: 0.875rem;
   cursor: pointer;
   transition: all 0.2s;
 }
 
 .submit-button {
-  background: #4299e1;
+  background: var(--accent-color);
   color: white;
+  font-weight: 600;
 }
 
 .submit-button:hover:not(:disabled) {
-  background: #3182ce;
+  background: var(--accent-hover);
 }
 
 .cancel-button {
-  background: #e53e3e;
-  color: white;
+  background: var(--error-bg);
+  color: var(--error-text);
 }
 
 .cancel-button:hover:not(:disabled) {
-  background: #c53030;
+  background: var(--error-border);
 }
 
 .submit-button:disabled,
@@ -160,12 +167,13 @@
 }
 
 .error-message {
-  background: #fff5f5;
-  color: #c53030;
-  padding: 1rem;
-  border-radius: 8px;
+  background: var(--error-bg);
+  color: var(--error-text);
+  padding: 0.75rem 1rem;
+  border-radius: 0.5rem;
   margin-bottom: 1rem;
-  font-size: 0.9rem;
+  font-size: 0.875rem;
+  border: 1px solid var(--error-border);
 }
 
 @media (max-width: 640px) {

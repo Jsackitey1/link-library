@@ -1,176 +1,118 @@
-import { auth, db } from '../utils/firebase';
-import { 
-  signInWithEmailAndPassword, 
-  signInWithPopup,
-  GoogleAuthProvider,
-  createUserWithEmailAndPassword 
-} from 'firebase/auth';
+import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { auth, googleProvider } from '../utils/firebase';
+import { signInWithEmailAndPassword, createUserWithEmailAndPassword, signInWithPopup } from 'firebase/auth';
 import { doc, setDoc, getDoc } from 'firebase/firestore';
-import { useState } from 'react';
-import { getRandomEmoji } from '../utils/emojiUtils';
+import { db } from '../utils/firebase';
+import './SignIn.css';
 
 const SignIn = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [error, setError] = useState(null);
+  const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const [isSignUp, setIsSignUp] = useState(false);
+  const navigate = useNavigate();
 
-  const createUserProfile = async (user) => {
-    try {
-      const userRef = doc(db, 'users', user.uid);
-      const userSnap = await getDoc(userRef);
-      
-      if (!userSnap.exists()) {
-        await setDoc(userRef, {
-          email: user.email,
-          avatar: getRandomEmoji(),
-          createdAt: new Date().toISOString(),
-          lastLogin: new Date().toISOString()
-        });
-        console.log('User profile created with random emoji avatar');
-      } else {
-        await setDoc(userRef, {
-          lastLogin: new Date().toISOString()
-        }, { merge: true });
-      }
-    } catch (error) {
-      console.error('Error creating user profile:', error);
-    }
-  };
-
-  const handleEmailAuth = async (e) => {
+  const handleAuth = async (e) => {
     e.preventDefault();
+    setError('');
     setLoading(true);
-    setError(null);
-    
-    try {
-      if (!email || !password) {
-        throw new Error('Please fill in all fields');
-      }
 
-      let userCredential;
-      
+    try {
       if (isSignUp) {
-        // Create new user
-        userCredential = await createUserWithEmailAndPassword(auth, email, password);
+        const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+        await createUserProfile(userCredential.user);
       } else {
-        // Sign in existing user
-        userCredential = await signInWithEmailAndPassword(auth, email, password);
+        await signInWithEmailAndPassword(auth, email, password);
       }
-      
-      // Only create/update profile after successful authentication
-      await createUserProfile(userCredential.user);
-      console.log('User authenticated successfully');
-      
+      navigate('/resources');
     } catch (error) {
-      console.error('Authentication error:', error);
-      // Provide more user-friendly error messages
-      if (error.code === 'auth/email-already-in-use') {
-        setError('An account with this email already exists');
-      } else if (error.code === 'auth/weak-password') {
-        setError('Password should be at least 6 characters');
-      } else if (error.code === 'auth/user-not-found') {
-        setError('No account found with this email');
-      } else if (error.code === 'auth/wrong-password') {
-        setError('Incorrect password');
-      } else {
-        setError(error.message);
-      }
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleGoogleSignIn = async () => {
-    setLoading(true);
-    setError(null);
-    
-    try {
-      const provider = new GoogleAuthProvider();
-      provider.setCustomParameters({
-        prompt: 'select_account'
-      });
-      
-      const result = await signInWithPopup(auth, provider);
-      await createUserProfile(result.user);
-      console.log('User signed in successfully with Google');
-    } catch (error) {
-      console.error('Google sign in error:', error);
       setError(error.message);
     } finally {
       setLoading(false);
     }
   };
 
+  const handleGoogleSignIn = async () => {
+    setError('');
+    setLoading(true);
+
+    try {
+      const result = await signInWithPopup(auth, googleProvider);
+      const userDoc = await getDoc(doc(db, 'users', result.user.uid));
+      
+      if (!userDoc.exists()) {
+        await createUserProfile(result.user);
+      }
+      navigate('/resources');
+    } catch (error) {
+      setError(error.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const createUserProfile = async (user) => {
+    await setDoc(doc(db, 'users', user.uid), {
+      email: user.email,
+      createdAt: new Date().toISOString(),
+      displayName: user.displayName || '',
+      photoURL: user.photoURL || '',
+    });
+  };
+
   return (
     <div className="sign-in-container">
-      <form onSubmit={handleEmailAuth}>
-        {error && (
-          <div className="error-message" style={{ color: 'red', marginBottom: '1rem' }}>
-            {error}
-          </div>
-        )}
-        
+      <h2 className="text-2xl font-bold text-center mb-6">
+        {isSignUp ? 'Create an Account' : 'Welcome Back'}
+      </h2>
+      <form onSubmit={handleAuth}>
         <div className="form-group">
-          <label htmlFor="email">Email:</label>
+          <label htmlFor="email">Email</label>
           <input
-            id="email"
             type="email"
+            id="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             placeholder="Enter your email"
-            disabled={loading}
             required
           />
         </div>
-
         <div className="form-group">
-          <label htmlFor="password">Password:</label>
+          <label htmlFor="password">Password</label>
           <input
-            id="password"
             type="password"
+            id="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             placeholder="Enter your password"
-            disabled={loading}
             required
           />
         </div>
-
-        <button 
-          type="submit" 
-          disabled={loading}
-          style={{ opacity: loading ? 0.7 : 1 }}
-        >
-          {loading ? 'Processing...' : (isSignUp ? 'Sign Up' : 'Sign In')}
+        {error && <div className="error-message">{error}</div>}
+        <button type="submit" disabled={loading}>
+          {loading ? 'Please wait...' : isSignUp ? 'Sign Up' : 'Sign In'}
         </button>
-
-        <button 
+        <button
           type="button"
           onClick={() => setIsSignUp(!isSignUp)}
-          style={{ marginLeft: '1rem' }}
+          className="text-center"
         >
-          {isSignUp ? 'Already have an account? Sign In' : 'Need an account? Sign Up'}
+          {isSignUp ? 'Already have an account? Sign In' : "Don't have an account? Sign Up"}
         </button>
       </form>
-
-      <div className="divider" style={{ margin: '1rem 0', textAlign: 'center' }}>
-        <span>OR</span>
+      <div className="divider">
+        <span>or</span>
       </div>
-
-      <button 
+      <button
+        type="button"
         onClick={handleGoogleSignIn}
         disabled={loading}
-        style={{ 
-          opacity: loading ? 0.7 : 1,
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          gap: '8px'
-        }}
+        className="google-sign-in"
       >
-        Sign in with Google
+        <img src="https://www.google.com/favicon.ico" alt="Google" />
+        Continue with Google
       </button>
     </div>
   );

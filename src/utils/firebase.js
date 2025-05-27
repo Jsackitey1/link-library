@@ -1,12 +1,8 @@
 import { initializeApp } from 'firebase/app';
-import { getAuth } from 'firebase/auth';
+import { getAuth, GoogleAuthProvider } from 'firebase/auth';
 import { getFirestore } from 'firebase/firestore';
 import { getStorage } from 'firebase/storage';
 import { getAnalytics } from 'firebase/analytics';
-
-// Debug: Log environment variables (remove in production)
-console.log("API Key:", process.env.REACT_APP_FIREBASE_API_KEY);
-console.log("Auth Domain:", process.env.REACT_APP_FIREBASE_AUTH_DOMAIN);
 
 const firebaseConfig = {
   apiKey: process.env.REACT_APP_FIREBASE_API_KEY,
@@ -24,5 +20,6 @@ const auth = getAuth(app);
 const db = getFirestore(app);
 const storage = getStorage(app);
 const analytics = getAnalytics(app);
+const googleProvider = new GoogleAuthProvider();
 
-export { app, auth, db, storage, analytics }; 
+export { app, auth, db, storage, analytics, googleProvider }; 

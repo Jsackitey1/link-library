@@ -44,6 +44,10 @@ function AppContent() {
             element={!user ? <Landing /> : <Navigate to="/resources" />} 
           />
           <Route 
+            path="/signup" 
+            element={!user ? <SignIn /> : <Navigate to="/resources" />} 
+          />
+          <Route 
             path="/resources" 
             element={
               <ResourceProvider>
@@ -67,6 +71,15 @@ function AppContent() {
               </ResourceProvider>
             } 
           />
+          <Route 
+            path="/terms" 
+            element={<div className="terms-page">Terms of Service Page</div>} 
+          />
+          <Route 
+            path="/privacy" 
+            element={<div className="privacy-page">Privacy Policy Page</div>} 
+          />
+          <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </main>
 
@@ -92,7 +105,7 @@ function App() {
   }, []);
 
   return (
-    <Router basename="/link-library">
+    <Router future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
       <AuthProvider>
         <AppContent />
       </AuthProvider>
